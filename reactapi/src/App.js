@@ -5,25 +5,28 @@ class App extends Component {
     constructor(props) {
     super(props);
     this.state = {
-      items: [],
+      posts: [],
+      comments: [],
       isLoaded: false
     }
   }
   
-  componentDidMount() {
-    fetch('https://jsonplaceholder.typicode.com/posts')
-      .then(res => res.json())
-      .then((data) => {
-        this.setState({
-          isLoaded: true,
-          items: data,
-        })
-      });
+  async componentDidMount() {
+    Promise.all([
+      fetch('https://jsonplaceholder.typicode.com/posts'),
+      fetch('https://jsonplaceholder.typicode.com/comments')
+    ])
+        .then(([res1, res2]) => Promise.all([res1.json(), res2.json()]))
+        .then(([data1, data2]) => this.setState({
+          posts: data1, 
+          comments: data2,
+          isLoaded: true
+        }));
     }
   
   render() {
 
-    var { isLoaded, items } = this.state;
+    var { isLoaded, posts, comments } = this.state;
 
     if (!isLoaded) {
       return <div>Loading...</div>
@@ -32,10 +35,11 @@ class App extends Component {
   
       return ( 
         <div className="App">
-          <div> {items.map(item => (
+          <div> {posts.map(post => (
             <div>
-              <h1>{item.title}</h1>
-              {item.body}
+              <h1>{post.title}</h1>
+              {post.body}
+              <h2>{comments[1].body}</h2>
             </div>
             
           ))}
