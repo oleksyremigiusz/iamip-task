@@ -13,13 +13,15 @@ class App extends Component {
   
     toggleComments = (postId) =>  {
       const {posts} = this.state;
-
       this.setState({
-        posts : posts.map(post =>
-          post.id === postId ?
-          {...post,showComment : !post.showComment}:
-          post
-        )
+        posts : posts.map(function(post){
+          if(post.id === postId){ 
+          return {...post,showComment : !post.showComment}}
+          else{
+            return post;
+          }
+          
+        })
       });
       
     }   
@@ -52,16 +54,17 @@ class App extends Component {
         <div className="App">
           {posts.map(post => {
 
-              const postComments = comments.map(comment => comment.postId === post.id);
-
+              const postComments = comments.filter(function(comment){ 
+                return (comment.postId === post.id)
+                })
               return ( 
                 <div key={post.id}>
                   <span>{post.name}</span>
-                  <div>{post.body}</div>
-                  {post.showComments ?
+                  <div><h2>{post.body}</h2></div>
+                  {post.showComment ?
                   (<div>
                     {postComments.map(comment => (
-                    <span key={comment.id}>{comment.body}</span>  
+                    <span key={comment.id}>{comment.body}</span>
                   ))}
                   </div>) :
                     (
