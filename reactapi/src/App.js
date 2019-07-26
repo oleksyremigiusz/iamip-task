@@ -13,7 +13,6 @@ class App extends Component {
     }
   
     toggleComment = (id) =>  {
-      console.log(id);
       var { showComment } = this.state;
       this.setState({
         showComment : showComment.map(function(x){
@@ -40,7 +39,9 @@ class App extends Component {
             return {
               show : false,
               id : x.id,
-              postId : x.postId
+              postId : x.postId,
+              email : x.email,
+              body : x.body
             }
           }),
           isLoaded: true
@@ -60,28 +61,39 @@ class App extends Component {
         <div className="App">
           {posts.map(post => {
               
-              var findComment = showComment.find(x => {
+              var findComment = showComment.filter(x => {
                 return post.id === x.postId
               })
-              var commentShow;
+              var commentShow = [];
               
-              if(findComment){
-                 commentShow = findComment.show
-              }
+              commentShow = findComment.map(function(found){
+                if(found){
+                  return found.show;
+              }})
               
+              var shownComment = [];
+              var hiddenComment = [];
+              
+              for (var i = 0; i<showComment.length; i++){
+                shownComment[i] = {
+                  display: commentShow[i] ? "block" : "none"
+                };
+                hiddenComment[i] = {
+                  display: commentShow[i] ? "none" : "block"
+                }  
+               
 
-              var shownComment = {
-                display: commentShow ? "block" : "none"
-              };
-              
-              var hiddenComment = {
-                display: commentShow ? "none" : "block"
-              }        
+              }
+                      
               return(
               <div key = {post.id}>
                 <h1>{post.title}</h1>
-                <h4 name={post.id} style={ shownComment }>{comments[post.id].body}</h4>
-				        <button className={post.id} style={ hiddenComment } onClick={() => this.toggleComment(post.id)}>Pokaż komentarze</button>
+                {findComment.map(function(x){
+                  return <h4 className={post.id} style={ shownComment[post.id] }>{x.body}</h4>
+                })}
+                  
+
+				        <button className={post.id} style={ hiddenComment[post.id] } onClick={() => this.toggleComment(post.id)}>Pokaż komentarze</button>
               </div>
           )})}
           </div>
