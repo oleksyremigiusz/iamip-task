@@ -17,7 +17,7 @@ class App extends Component {
       this.setState({
         posts : posts.map(post =>
           post.id === postId ?
-          post.showComment = !post.showComment:
+          {...post,showComment : !post.showComment}:
           post
         )
       });
@@ -31,7 +31,7 @@ class App extends Component {
     ])
         .then(([res1, res2]) => Promise.all([res1.json(), res2.json()]))
         .then(([data1, data2]) => {
-          data1.forEach(x => x.showComment = false)
+          //data1.forEach(x => x.showComment = false)
           this.setState({
             posts: data1, 
             comments: data2,
@@ -52,18 +52,17 @@ class App extends Component {
         <div className="App">
           {posts.map(post => {
 
-              const postComments = comments.map(function(comment){
-                return comment.postId === post.id
-               })
+              const postComments = comments.map(comment => comment.postId === post.id);
+
               return ( 
                 <div key={post.id}>
                   <span>{post.name}</span>
                   <div>{post.body}</div>
                   {post.showComments ?
                   (<div>
-                    {postComments.map(function(comment){
-                    return <span key={comment.id}>{comment.body}</span>  
-                  })})
+                    {postComments.map(comment => (
+                    <span key={comment.id}>{comment.body}</span>  
+                  ))}
                   </div>) :
                     (
                       <button onClick={() => this.toggleComments(post.id)}>Pokaż komentarze</button>
