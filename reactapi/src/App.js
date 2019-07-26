@@ -87,9 +87,9 @@ class App extends Component {
                       
               return(
               <div key = {post.id}>
-                <h1>{post.title}</h1>
+                <h1 >{post.title}</h1>
                 {findComment.map(function(x){
-                  return <h4 className={post.id} style={ shownComment[post.id] }>{x.body}</h4>
+                  return <h4 key={x.id} style={ shownComment[post.id] }>{x.body}</h4>
                 })}
                   
 
