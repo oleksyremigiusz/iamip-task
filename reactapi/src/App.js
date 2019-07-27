@@ -59,12 +59,13 @@ class App extends Component {
                 })
               return ( 
                 <div key={post.id}>
+                  <hr></hr>
                   <span>{post.name}</span>
-                  <div><h2>{post.body}</h2></div>
+                  <div><h1>Title: {post.title}</h1><br></br><h2>Body: {post.body}</h2></div>
                   {post.showComment ?
                   (<div>
                     {postComments.map(comment => (
-                    <span key={comment.id}>{comment.body}</span>
+                    <div key={comment.id}> ----> {comment.body}<br></br></div>
                   ))}
                   </div>) :
                     (
