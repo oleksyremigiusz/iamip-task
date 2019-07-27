@@ -8,23 +8,23 @@ class App extends Component {
         posts: [],
         comments: [],
         isLoaded: false,
-        showComment: [],
       }
     }
   
-    toggleComment = (id) =>  {
-      var { showComment } = this.state;
+    toggleComments = (postId) =>  {
+      const {posts} = this.state;
       this.setState({
-        showComment : showComment.map(function(x){
-          if (x.postId === id){
-            return {...x,show : !x.show}
-          }
+        posts : posts.map(function(post){
+          if(post.id === postId){ 
+          return {...post,showComment : !post.showComment}}
           else{
-            return x;
+            return post;
           }
-        }) 
+          
+        })
       });
-    }    
+      
+    }   
   
   async componentDidMount() {
     Promise.all([
@@ -32,72 +32,51 @@ class App extends Component {
       fetch('https://jsonplaceholder.typicode.com/comments')
     ])
         .then(([res1, res2]) => Promise.all([res1.json(), res2.json()]))
-        .then(([data1, data2]) => this.setState({
-          posts: data1, 
-          comments: data2,
-          showComment: data2.map(function(x){
-            return {
-              show : false,
-              id : x.id,
-              postId : x.postId,
-              email : x.email,
-              body : x.body
-            }
-          }),
-          isLoaded: true
-        }));
+        .then(([data1, data2]) => {
+          //data1.forEach(x => x.showComment = false)
+          this.setState({
+            posts: data1, 
+            comments: data2,
+            isLoaded: true
+          })
+        });
     }
 
   render() {
   
-    var { isLoaded, posts, comments, showComment } = this.state;
+    var { isLoaded, posts, comments } = this.state;
 
     if (!isLoaded) {
       return <div>Loading...</div>
     }
     else {
-  
       return ( 
         <div className="App">
           {posts.map(post => {
-              
-              var findComment = showComment.filter(x => {
-                return post.id === x.postId
-              })
-              var commentShow = [];
-              
-              commentShow = findComment.map(function(found){
-                if(found){
-                  return found.show;
-              }})
-              
-              var shownComment = [];
-              var hiddenComment = [];
-              
-              for (var i = 0; i<showComment.length; i++){
-                shownComment[i] = {
-                  display: commentShow[i] ? "block" : "none"
-                };
-                hiddenComment[i] = {
-                  display: commentShow[i] ? "none" : "block"
-                }  
-               
 
-              }
-                      
-              return(
-              <div key = {post.id}>
-                <h1 >{post.title}</h1>
-                {findComment.map(function(x){
-                  return <h4 key={x.id} style={ shownComment[post.id] }>{x.body}</h4>
+              const postComments = comments.filter(function(comment){ 
+                return (comment.postId === post.id)
+                })
+              return ( 
+                <div key={post.id}>
+                  <hr></hr>
+                  <span>{post.name}</span>
+                  <div><h1>Title: {post.title}</h1><br></br><h2>Body: {post.body}</h2></div>
+                  {post.showComment ?
+                  (<div>
+                    {postComments.map(comment => (
+                    <div key={comment.id}> ----> {comment.body}<br></br></div>
+                  ))}
+                  </div>) :
+                    (
+                      <button onClick={() => this.toggleComments(post.id)}>Pokaż komentarze</button>
+                    )
+                  }
+                </div>
+                  )
                 })}
-                  
-
-				        <button className={post.id} style={ hiddenComment[post.id] } onClick={() => this.toggleComment(post.id)}>Pokaż komentarze</button>
-              </div>
-          )})}
-          </div>
-      );
+                </div>
+          )
     }
   }
 }
